@@ -1,0 +1,21 @@
+{
+  "name": "init",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "xugongyang"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "jquery": "3.2.1",
+    "bootstrap": "^3.3.7"
+  }
+}
