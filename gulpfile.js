@@ -52,19 +52,20 @@ gulp.task('lib',function(){
          .pipe(gulp.dest(app.releasePath+'lib/fonts'))
 });
 
-//源码html写入 开发与发版目录中
+//1、源码html写入 开发与发版目录中
 gulp.task('writeHtml',function(){
     gulp.src(app.srcPath.html)
         .pipe(gulp.dest(app.developPath+'view'))
         .pipe(gulp.dest(app.releasePath+'view'))
         .pipe($.connect.reload());
 });
-// gulp-useref 与 htmlmin 同一个任务中有冲突  分开执行任务 压缩、合并、
+// 2、合并、
 gulp.task('distHtmlCombine',function(){
     gulp.src(app.releasePath+'/view/**/*.html')
         .pipe($.useref())
         .pipe(gulp.dest(app.releasePath+'view'))
 });
+// 3、压缩
 gulp.task('distHtmlMin',function(){
     var options = {
         removeComments: true,//清除HTML注释
@@ -81,8 +82,9 @@ gulp.task('distHtmlMin',function(){
         .pipe(gulp.dest(app.releasePath+'view'))
         .pipe($.connect.reload());
 });
-//html 任务 1、写入 2、合并 3、压缩
+// 执行步骤 1、写入 2、合并 3、压缩 （gulp-useref 与 htmlmin 同一个任务中有冲突）
 gulp.task('html',['writeHtml','distHtmlCombine','distHtmlMin']);
+
 //less编译成css
 gulp.task('less',function(){
     gulp.src(app.srcPath.less)
