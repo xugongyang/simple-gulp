@@ -25,7 +25,7 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
 cnpm -v 会输出版本信息（安装成功）
 
 
-#### How to use 
+### How to use 
 > 1、初始化项目  执行命令 npm init
 >2、作为项目的开发依赖（devDependencies）安装  
 >3、[Bower ](https://bower.io/)   web包管理 (项目中依赖的三方包资源)
