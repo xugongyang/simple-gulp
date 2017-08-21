@@ -6,7 +6,7 @@
 > 能力越大,责任越大。
 > 项目发版上线前需要对代码进行压缩、合并、引用文件版本管理等 一系列的处理。
 > 现在我们可以把这些工作交给自动化构建工具来做，比较主流的有 [Grunt](https://gruntjs.com/)、[Gulp](https://gulpjs.com/)、[webpack](https://webpack.js.org/)
-> 以上工具我之前都没用过（个人之前是做后端开发的 .net ,java）比较喜欢前端，最近用了下 [Gulp](https://gulpjs.com/) ,确实挺好用，把我学习的一些心得分享给大家
+> 今天分享的是Gulp
 
 ### Why  gulp
 > 易于使用
