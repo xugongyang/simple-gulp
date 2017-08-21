@@ -140,66 +140,7 @@ gulp.task('html', function () {
 
 #### gulpfile.js 文件 
 ###### 你可以作为一个种子文件，在此基础上添加或修改来实现你的项目构建。
-> 在此说声抱歉，之前的html 任务 写的有点问题
-> 发现在同一个任务下合并与压缩会报错（我目前给出的解决方案是拆成两个任务执行）
-``` 
-//（修改前的html任务，dist目录中没有生成view视图文件）html 压缩、合并、解析注释合并引用的js、css  
-gulp.task('html',function(){
-    var options = {
-        removeComments: true,//清除HTML注释
-        collapseWhitespace: true,//压缩HTML
-        collapseBooleanAttributes: true,//省略布尔属性的值 <input checked="true"/> ==> <input />
-        removeEmptyAttributes: true,//删除所有空格作属性值 <input id="" /> ==> <input />
-        removeScriptTypeAttributes: true,//删除<script>的type="text/javascript"
-        removeStyleLinkTypeAttributes: true,//删除<style>和<link>的type="text/css"
-        minifyJS: true,//压缩页面JS
-        minifyCSS: true//压缩页面CSS
-    };
-    gulp.src(app.srcPath.html)
-        .pipe(gulp.dest(app.developPath+'view')),
-    gulp.src(app.developPath+'view/**/*.html')
-        .pipe($.useref())   
-        .pipe($.htmlmin(options))
-        .pipe(gulp.dest(app.releasePath+'view'))
-        .pipe($.connect.reload());
-});
-```
-> 这个是合并、压缩拆开后的 html任务 (详情请看插图 useref.png)
-> 执行步骤 1、写入 2、合并 3、压缩 （gulp-useref 与 htmlmin 同一个任务中有冲突）
-```
-//1、源码html写入 开发与发版目录中
-gulp.task('writeHtml',function(){
-    gulp.src(app.srcPath.html)
-        .pipe(gulp.dest(app.developPath+'view'))
-        .pipe(gulp.dest(app.releasePath+'view'))
-        .pipe($.connect.reload());
-});
-// 2、合并、
-gulp.task('distHtmlCombine',function(){
-    gulp.src(app.releasePath+'/view/**/*.html')
-        .pipe($.useref())
-        .pipe(gulp.dest(app.releasePath+'view'))
-});
-// 3、压缩
-gulp.task('distHtmlMin',function(){
-    var options = {
-        removeComments: true,//清除HTML注释
-        collapseWhitespace: true,//压缩HTML
-        collapseBooleanAttributes: true,//省略布尔属性的值 <input checked="true"/> ==> <input />
-        removeEmptyAttributes: true,//删除所有空格作属性值 <input id="" /> ==> <input />
-        removeScriptTypeAttributes: true,//删除<script>的type="text/javascript"
-        removeStyleLinkTypeAttributes: true,//删除<style>和<link>的type="text/css"
-        minifyJS: true,//压缩页面JS
-        minifyCSS: true//压缩页面CSS
-    };
-    gulp.src(app.releasePath+'/view/**/*.html')
-        .pipe($.htmlmin({collapseWhitespace: true}))
-        .pipe(gulp.dest(app.releasePath+'view'))
-        .pipe($.connect.reload());
-});
-//html 任务 1、写入 2、合并 3、压缩 （gulp-useref 与 htmlmin 同一个任务中有冲突  分开执行任务）
-gulp.task('html',['writeHtml','distHtmlCombine','distHtmlMin']);
-```
+
 ```
 //gulp
 var gulp=require('gulp');
@@ -349,5 +290,4 @@ gulp.task('default',['server']);
 ![index.png](http://upload-images.jianshu.io/upload_images/2069616-3c097a530ddfff52.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ## The end
-> 如果你觉得这边文章对你有所帮助,可以关注一波。
 > Thank you for reading
