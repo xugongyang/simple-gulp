@@ -18,9 +18,11 @@
     "gulp-imagemin": "^3.3.0",
     "gulp-less": "^3.3.2",
     "gulp-load-plugins": "^1.5.0",
+    "gulp-sequence": "^0.4.6",
     "gulp-uglify": "^3.0.0",
     "gulp-useref": "^3.1.2",
     "gulp-watch": "^4.3.11",
-    "open": "^0.0.5"
+    "open": "^0.0.5",
+    "run-sequence": "^2.1.0"
   }
 }

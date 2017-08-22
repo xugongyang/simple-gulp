@@ -3,6 +3,8 @@
 var gulp=require('gulp');
 //从包依赖性中加载插件并将它们附加到你所选的对象上
 var $=require('gulp-load-plugins')();
+//按顺序执行gulp 任务
+var gulpSequence = require('gulp-sequence')
 //项目工程启动时打开一个文件或url （与gulp-connect 结合使用我们可以设置启动项目打开首页）
 var open=require('open');
 
@@ -54,14 +56,14 @@ gulp.task('lib',function(){
 
 //1、源码html写入 开发与发版目录中
 gulp.task('writeHtml',function(){
-    gulp.src(app.srcPath.html)
-        .pipe(gulp.dest(app.developPath+'view'))
-        .pipe(gulp.dest(app.releasePath+'view'))
-        .pipe($.connect.reload());
+    return gulp.src(app.srcPath.html)
+            .pipe(gulp.dest(app.developPath+'view'))
+            .pipe(gulp.dest(app.releasePath+'view'))
+            .pipe($.connect.reload());
 });
 // 2、合并、
 gulp.task('distHtmlCombine',function(){
-    gulp.src(app.releasePath+'/view/**/*.html')
+    return gulp.src(app.releasePath+'/view/**/*.html')
         .pipe($.useref())
         .pipe(gulp.dest(app.releasePath+'view'))
 });
@@ -77,17 +79,19 @@ gulp.task('distHtmlMin',function(){
         minifyJS: true,//压缩页面JS
         minifyCSS: true//压缩页面CSS
     };
-    gulp.src(app.releasePath+'/view/**/*.html')
-        .pipe($.htmlmin({collapseWhitespace: true}))
+    return gulp.src(app.releasePath+'/view/**/*.html')
+        .pipe($.htmlmin(options))
         .pipe(gulp.dest(app.releasePath+'view'))
         .pipe($.connect.reload());
 });
-// 执行步骤 1、写入 2、合并 3、压缩 （gulp-useref 与 htmlmin 同一个任务中有冲突）
-gulp.task('html',['writeHtml','distHtmlCombine','distHtmlMin']);
+// 执行步骤 1、写入 2、合并 3、压缩
+gulp.task('html',function(callback){
+    gulpSequence('writeHtml','distHtmlCombine','distHtmlMin')(callback)
+});
 
 //less编译成css
 gulp.task('less',function(){
-    gulp.src(app.srcPath.less)
+   return gulp.src(app.srcPath.less)
         .pipe($.less())
         .pipe(gulp.dest(app.developPath+'css'))
         .pipe($.cssmin())
@@ -96,7 +100,7 @@ gulp.task('less',function(){
 });
 //js压缩合并
 gulp.task('js',function(){
-    gulp.src(app.srcPath.js)
+   return gulp.src(app.srcPath.js)
         .pipe(gulp.dest(app.developPath+'js'))
         .pipe($.uglify())
         .pipe(gulp.dest(app.releasePath+'js'))
@@ -104,14 +108,14 @@ gulp.task('js',function(){
 });
 //json任务
 gulp.task('json',function(){
-    gulp.src(app.srcPath.json)
+   return gulp.src(app.srcPath.json)
         .pipe(gulp.dest(app.developPath+'data'))
         .pipe(gulp.dest(app.releasePath+'data'))
         .pipe($.connect.reload());
 });
 //image 压缩
 gulp.task('image',function(){
-    gulp.src(app.srcPath.image)
+   return gulp.src(app.srcPath.image)
         .pipe(gulp.dest(app.developPath+'image'))
         .pipe($.imagemin())
         .pipe(gulp.dest(app.releasePath+'image'))
@@ -123,18 +127,22 @@ gulp.task('clean', function(){
         .pipe($.clean());
 });
 //构建任务
-gulp.task('build',['lib','image','js','less','html','json']);
-//
+gulp.task('build', gulpSequence('clean',['lib','image','js','less','json'],'html'));
+//创建服务
 gulp.task('server',['build'],function(){
     $.connect.server({
-        root:[app.developPath],
+        root:[app.releasePath],
         livereload:true,
         port:3333
     });
    open('http://localhost:3333/view/index.html');
-
+    //gulp-sequence 在gulp watch 中使用
+    gulp.watch(app.srcPath.html,function (event) {
+        gulpSequence('html')(function (err) {
+            if (err) console.log(err)
+        })
+    });
     gulp.watch('bower_components/**/*',['lib']);
-    gulp.watch(app.srcPath.html,['html']);
     gulp.watch(app.srcPath.js,['js']);
     gulp.watch(app.srcPath.json,['json']);
     gulp.watch(app.srcPath.less,['less']);
