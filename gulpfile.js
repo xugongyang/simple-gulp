@@ -86,7 +86,7 @@ gulp.task('distHtmlMin',function(){
 });
 // 执行步骤 1、写入 2、合并 3、压缩
 gulp.task('html',function(callback){
-    gulpSequence('writeHtml','distHtmlCombine','distHtmlMin')(callback)
+    gulpSequence('writeHtml','distHtmlCombine','distHtmlMin')(callback);
 });
 
 //less编译成css
@@ -131,7 +131,7 @@ gulp.task('build', gulpSequence('clean',['lib','image','js','less','json'],'html
 //创建服务
 gulp.task('server',['build'],function(){
     $.connect.server({
-        root:[app.releasePath],
+        root:[app.developPath],
         livereload:true,
         port:3333
     });
