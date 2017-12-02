@@ -13,7 +13,9 @@ var app={
     srcPath:{
         html:'src/view/**/*.html',
         js:'src/script/**/*.js',
+        css:'src/style/**/*.css',
         less:'src/style/**/*.less',
+        sass:'src/style/**/*.scss',
         image:'src/image/**/*',
         json:'src/data/**/*.json'
     },
@@ -24,7 +26,6 @@ var app={
     //第三放依赖文件
     lib:{
         js:[
-            'src/script/common/*.js',
             'bower_components/jquery/dist/jquery.min.js',
             'bower_components/bootstrap/dist/js/bootstrap.min.js'
         ],
@@ -88,7 +89,14 @@ gulp.task('distHtmlMin',function(){
 gulp.task('html',function(callback){
     gulpSequence('writeHtml','distHtmlCombine','distHtmlMin')(callback);
 });
-
+// css 压缩合并
+gulp.task('css',function(){
+    return gulp.src(app.srcPath.css)
+        .pipe(gulp.dest(app.developPath+'css'))
+        .pipe($.cssmin())
+        .pipe(gulp.dest(app.releasePath+'css'))
+        .pipe($.connect.reload());
+});
 //less编译成css
 gulp.task('less',function(){
    return gulp.src(app.srcPath.less)
@@ -98,9 +106,19 @@ gulp.task('less',function(){
         .pipe(gulp.dest(app.releasePath+'css'))
         .pipe($.connect.reload());
 });
+//sass变成成css
+gulp.task('sass', function () {
+    return gulp.src(app.srcPath.sass)
+        .pipe($.sass().on('error', $.sass.logError))
+        .pipe(gulp.dest(app.developPath+'css'))
+        .pipe($.cssmin())
+        .pipe(gulp.dest(app.releasePath+'css'))
+        .pipe($.connect.reload());
+});
 //js压缩合并
 gulp.task('js',function(){
    return gulp.src(app.srcPath.js)
+        .pipe($.babel({presets: [ ["es2015", {"loose": true}] ]}))  
         .pipe(gulp.dest(app.developPath+'js'))
         .pipe($.uglify())
         .pipe(gulp.dest(app.releasePath+'js'))
@@ -123,11 +141,11 @@ gulp.task('image',function(){
 });
 //清除文件夹及文件
 gulp.task('clean', function(){
-    gulp.src([app.developPath,app.releasePath])
+    return gulp.src([app.developPath,app.releasePath])
         .pipe($.clean());
 });
 //构建任务
-gulp.task('build', gulpSequence('clean',['lib','image','js','less','json'],'html'));
+gulp.task('build', gulpSequence('clean',['lib','image','js','css','less','sass','json'],'html'));
 //创建服务
 gulp.task('server',['build'],function(){
     $.connect.server({
@@ -145,7 +163,9 @@ gulp.task('server',['build'],function(){
     gulp.watch('bower_components/**/*',['lib']);
     gulp.watch(app.srcPath.js,['js']);
     gulp.watch(app.srcPath.json,['json']);
+    gulp.watch(app.srcPath.css,['css']);
     gulp.watch(app.srcPath.less,['less']);
+    gulp.watch(app.srcPath.sass,['sass']);
     gulp.watch(app.srcPath.image,['image']);
 });
 // 默认任务设置成server
