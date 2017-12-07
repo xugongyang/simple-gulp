@@ -92,6 +92,7 @@ gulp.task('html',function(callback){
 // css 压缩合并
 gulp.task('css',function(){
     return gulp.src(app.srcPath.css)
+        .pipe($.plumber({errorHandler: function(error){this.emit('end');}}))
         .pipe(gulp.dest(app.developPath+'css'))
         .pipe($.cssmin())
         .pipe(gulp.dest(app.releasePath+'css'))
@@ -100,15 +101,17 @@ gulp.task('css',function(){
 //less编译成css
 gulp.task('less',function(){
    return gulp.src(app.srcPath.less)
+        .pipe($.plumber({errorHandler: function(error){this.emit('end');}}))
         .pipe($.less())
         .pipe(gulp.dest(app.developPath+'css'))
         .pipe($.cssmin())
         .pipe(gulp.dest(app.releasePath+'css'))
         .pipe($.connect.reload());
 });
-//sass变成成css
+//sass编译成css
 gulp.task('sass', function () {
     return gulp.src(app.srcPath.sass)
+        .pipe($.plumber({errorHandler: function(error){this.emit('end');}}))
         .pipe($.sass().on('error', $.sass.logError))
         .pipe(gulp.dest(app.developPath+'css'))
         .pipe($.cssmin())
@@ -118,7 +121,8 @@ gulp.task('sass', function () {
 //js压缩合并
 gulp.task('js',function(){
    return gulp.src(app.srcPath.js)
-        .pipe($.babel({presets: [ ["es2015", {"loose": true}] ]}))  
+        .pipe($.plumber({errorHandler: function(error){this.emit('end');}}))
+        .pipe($.babel({presets: [ ["es2015", {"loose": true}] ]}))
         .pipe(gulp.dest(app.developPath+'js'))
         .pipe($.uglify())
         .pipe(gulp.dest(app.releasePath+'js'))
@@ -127,6 +131,7 @@ gulp.task('js',function(){
 //json任务
 gulp.task('json',function(){
    return gulp.src(app.srcPath.json)
+        .pipe($.plumber({errorHandler: function(error){this.emit('end');}}))
         .pipe(gulp.dest(app.developPath+'data'))
         .pipe(gulp.dest(app.releasePath+'data'))
         .pipe($.connect.reload());
